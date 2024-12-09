@@ -91,4 +91,25 @@ menusRouter.put("/:menuId", (req, res, next) => {
   );
 });
 
+menusRouter.delete("/:menuId", (req, res, next) => {
+  db.all(
+    `SELECT * FROM MenuItem WHERE menu_id = ${req.params.menuId}`,
+    (err, menu) => {
+      if (err) {
+        next(err);
+      } else if (menu.length !== 0) {
+        res.sendStatus(400);
+      } else {
+        db.run(`DELETE FROM Menu WHERE id = ${req.params.menuId}`, (err) => {
+          if (err) {
+            next(err);
+          } else {
+            res.sendStatus(204);
+          }
+        });
+      }
+    }
+  );
+});
+
 module.exports = menusRouter;
