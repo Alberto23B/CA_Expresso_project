@@ -46,7 +46,7 @@ employeesRouter.post("/", (req, res, next) => {
   }
   db.run(
     `INSERT INTO Employee (name, position, wage) VALUES (
-    $name, $position, $wage
+    $name, $position, $wage 
     )`,
     {
       $name: name,
@@ -91,7 +91,7 @@ employeesRouter.put("/:employeeId", (req, res, next) => {
     return res.sendStatus(400);
   }
   db.run(
-    `UPDATE Employee SET name = $name, position = $position, wage = $wage`,
+    `UPDATE Employee SET name = $name, position = $position, wage = $wage WHERE id = ${req.params.employeeId}`,
     {
       $name: name,
       $position: position,
