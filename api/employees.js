@@ -69,4 +69,70 @@ employeesRouter.post("/", (req, res, next) => {
   );
 });
 
+employeesRouter.get("/:employeeId", (req, res, next) => {
+  db.get(
+    `SELECT * FROM Employee WHERE id = ${req.employee.id}`,
+    (err, employee) => {
+      if (err) {
+        next(err);
+      } else {
+        res.status(200).json({ employee: employee });
+      }
+    }
+  );
+});
+
+employeesRouter.put("/:employeeId", (req, res, next) => {
+  const { name, position, wage } = req.body.employee;
+  if (!name || !position || !wage) {
+    return res.sendStatus(400);
+  }
+  db.run(
+    `UPDATE Employee SET name = $name, position = $position, wage = $wage`,
+    {
+      $name: name,
+      $position: position,
+      $wage: wage,
+    },
+    function (err) {
+      if (err) {
+        next(err);
+      } else {
+        db.get(
+          `SELECT * FROM Employee WHERE id = ${req.employee.id}`,
+          (err, employee) => {
+            if (err) {
+              next(err);
+            } else {
+              res.status(200).json({ employee: employee });
+            }
+          }
+        );
+      }
+    }
+  );
+});
+
+employeesRouter.delete("/:employeeId", (req, res, next) => {
+  db.run(
+    `UPDATE Employee SET is_current_employee = 0 WHERE id = ${req.employee.id}`,
+    (err) => {
+      if (err) {
+        next(err);
+      } else {
+        db.get(
+          `SELECT * FROM Employee WHERE id = ${req.employee.id}`,
+          (err, employee) => {
+            if (err) {
+              next(err);
+            } else {
+              res.status(200).json({ employee: employee });
+            }
+          }
+        );
+      }
+    }
+  );
+});
+
 module.exports = employeesRouter;
