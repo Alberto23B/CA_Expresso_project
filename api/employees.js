@@ -7,6 +7,22 @@ const db = new sqlite3.Database(
   process.env.TEST_DATABASE || "./database.sqlite"
 );
 
+employeesRouter.param("employeeId", (req, res, next, employeeId) => {
+  db.get(
+    `SELECT * FROM Employee WHERE Employee.id = ${employeeId}`,
+    (err, employee) => {
+      if (err) {
+        next(err);
+      } else if (employee) {
+        req.employee = employee;
+        next();
+      } else {
+        res.sendStatus(404);
+      }
+    }
+  );
+});
+
 employeesRouter.get("/", (req, res, next) => {
   db.all(
     "SELECT * FROM Employee WHERE is_current_employee = 1",
