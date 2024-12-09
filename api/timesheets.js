@@ -6,6 +6,22 @@ const db = new sqlite3.Database(
   process.env.TEST_DATABASE || "./database.sqlite"
 );
 
+timesheetsRouter.param("timesheetId", (req, res, next, timesheetId) => {
+  db.get(
+    `SELECT * FROM Timesheet WHERE id = ${timesheetId}`,
+    (err, timesheet) => {
+      if (err) {
+        next(err);
+      } else if (timesheet) {
+        req.timesheet = timesheet;
+        next();
+      } else {
+        res.sendStatus(404);
+      }
+    }
+  );
+});
+
 timesheetsRouter.get("/", (req, res, next) => {
   db.all(
     `SELECT * FROM Timesheet WHERE employee_id = ${req.employee.id}`,
