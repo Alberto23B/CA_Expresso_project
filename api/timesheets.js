@@ -24,7 +24,7 @@ timesheetsRouter.param("timesheetId", (req, res, next, timesheetId) => {
 
 timesheetsRouter.get("/", (req, res, next) => {
   db.all(
-    `SELECT * FROM Timesheet WHERE employee_id = ${req.employee.id}`,
+    `SELECT * FROM Timesheet WHERE employee_id = ${req.params.employeeId}`,
     (err, timesheets) => {
       if (err) {
         next(err);
@@ -37,7 +37,7 @@ timesheetsRouter.get("/", (req, res, next) => {
 
 timesheetsRouter.post("/", (req, res, next) => {
   const { hours, rate, date } = req.body.timesheet;
-  const employeeId = req.employee.id;
+  const employeeId = req.params.employeeId;
   if (!hours || !rate || !date) {
     return res.sendStatus(400);
   }
